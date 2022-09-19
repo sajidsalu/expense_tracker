@@ -1,9 +1,11 @@
 import 'package:expense_tracker/constants/colors.dart';
 import 'package:expense_tracker/constants/styles.dart';
+import 'package:expense_tracker/modules/expense/create/create_expense.dart';
 import 'package:expense_tracker/modules/home/dashboard_card.dart';
 import 'package:expense_tracker/modules/home/transaction-card.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -33,7 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 AppColors.primaryViolet,])
           ),
         ),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const CreateExpense(),
+            ),
+          );
+        },
       ),
       body: SafeArea(
         child: Container(
