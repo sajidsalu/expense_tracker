@@ -1,22 +1,26 @@
 import 'package:expense_tracker/constants/styles.dart';
 import 'package:flutter/material.dart';
 
-enum TransactionType{
-  food,
-  entertainment,
-  recharge,
-  homeRent,
-  otherBills,
+class TransactionCategory{
+  static const int food = 1;
+  static const int entertainment = 2;
+  static const int recharge = 3;
+  static const int otherBills = 4;
+  static const int homeRent = 5;
 }
 class TransactionCardItem extends StatefulWidget {
-  TransactionType transactionType= TransactionType.food;
+  int transactionType= TransactionCategory.food;
   double amount = 0;
   String date ="";
+  bool isExpenseEntry=true;
+  String note ="";
 
-  TransactionCardItem({Key? key, required TransactionType type,required double transactionAmount,required String transactionDate}) : super(key: key){
+  TransactionCardItem({Key? key, required int type,required double transactionAmount,required String transactionDate, required bool isExpense, required String description}) : super(key: key){
     amount = transactionAmount;
     date = transactionDate;
     transactionType = type;
+    isExpenseEntry = isExpense;
+    note = description;
   }
 
   @override
@@ -24,42 +28,46 @@ class TransactionCardItem extends StatefulWidget {
 }
 
 class _TransactionCardItemState extends State<TransactionCardItem> {
-  var image ="assets/images/";
+  var image ="assets/images/food.png";
   var transaction= "";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("transaction type ${widget.transactionType}");
     switch(widget.transactionType){
-      case TransactionType.food : {
+      case TransactionCategory.food : {
         image="assets/images/food.png";
         transaction = "Food";
         break;
       }
-      case TransactionType.entertainment : {
+      case TransactionCategory.entertainment : {
         image="assets/images/entertainment.png";
         transaction = "Entertainment";
         break;
       }
-      case TransactionType.homeRent : {
+      case TransactionCategory.homeRent : {
         image="assets/images/house-rent.png";
         transaction = "Rent";
         break;
       }
-      case TransactionType.recharge : {
+      case TransactionCategory.recharge : {
         image="assets/images/recharge.png";
         transaction = "Recharge";
         break;
       }
-      case TransactionType.otherBills : {
+      case TransactionCategory.otherBills : {
         image="assets/images/bill.png";
         transaction = "Bills";
         break;
       }
     }
-  }
-  @override
-  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -75,13 +83,25 @@ class _TransactionCardItemState extends State<TransactionCardItem> {
             children: [
               Image.asset(image,height: 50,width: 50,),
               SizedBox(width: 30,),
-              Text(transaction,style: TextStyles.h3,),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(transaction,style: TextStyles.h3,),
+                  SizedBox(height: 5,),
+                  SizedBox(
+                    width: 150,
+                    child: Text(widget.note,  maxLines:1, style: TextStyles.h5lightGrey, overflow: TextOverflow.ellipsis,),
+                  )
+                ],
+              ),
             ],
           ),
           Column(
             children: [
-              Text("-\$${widget.amount}"),
-              Text("${widget.date}"),
+              Text("${widget.isExpenseEntry?"-":"+"}\$${widget.amount}",style: TextStyle(fontWeight: FontWeight.w600),),
+              SizedBox(height: 5,),
+              Text("${widget.date}", style: TextStyle(fontWeight: FontWeight.w400, fontSize: FontSizes.s11),),
             ],
           )
         ],

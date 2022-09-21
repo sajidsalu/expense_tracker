@@ -1,7 +1,17 @@
 import 'package:expense_tracker/constants/colors.dart';
+import 'package:expense_tracker/constants/hive_boxes.dart';
 import 'package:expense_tracker/constants/styles.dart';
+import 'package:expense_tracker/models/expense_transaction.dart';
+import 'package:expense_tracker/models/transaction_categories.dart';
+import 'package:expense_tracker/modules/expense/create/bloc.dart';
+import 'package:expense_tracker/modules/home/transaction-card.dart';
+import 'package:expense_tracker/services/transaction_category.dart';
+import 'package:expense_tracker/services/transaction_utils.dart';
+import 'package:expense_tracker/services/types/transaction_type.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_guid/flutter_guid.dart';
+import 'package:hive/hive.dart';
+ import 'package:intl/intl.dart';
 class CreateExpense extends StatefulWidget {
   const CreateExpense({Key? key}) : super(key: key);
 
@@ -10,17 +20,42 @@ class CreateExpense extends StatefulWidget {
 }
 
 class _CreateExpenseState extends State<CreateExpense> {
-  List<String> list = <String>['Home Rent', 'Entertainment', 'Bills','Recharge','food'];
-  String dropdownValue = "";
+  late Box<ExpenseTransaction> dataBox;
+
+  TransactionCategoryService categoryService = TransactionCategoryService();
+
+  TextEditingController amountInput = TextEditingController();
   TextEditingController dateInput = TextEditingController();
+  ExpenseTransactionService service = ExpenseTransactionService();
+
+  final amountController = TextEditingController(text: "0");
+  final dateController = TextEditingController();
+  final descriptionController = TextEditingController();
+
+  CreateExpenseBloc _bloc = CreateExpenseBloc();
+
+  TransactionCategories selectedCategory = TransactionCategories.food();
+
+  bool isExpense = true;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    dropdownValue = list.first;
     dateInput.text = "";
+    dataBox = Hive.box<ExpenseTransaction>(HiveBoxes.expenses);
+
   }
+
+  @override
+  void dispose() {
+    amountController.dispose();
+    dateController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,19 +66,35 @@ class _CreateExpenseState extends State<CreateExpense> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              Row(
+                children: [
+                  Text("${isExpense ? "Expense":"Income"}", style: TextStyles.h3,),
+                  Switch(
+                    value: isExpense,
+                    onChanged: (value) {
+                      setState(() {
+                        isExpense = value;
+                      });
+                    },
+                    activeTrackColor: AppColors.coolGrey,
+                    activeColor: AppColors.primaryViolet,
+                    inactiveThumbColor: AppColors.secondary,
+                  ),
+                ],
+              ),
               Column(
                 children: [
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 10,vertical: 20),
-                    child:Text("Add Expense", style: TextStyles.h1Dark,),
+                    child:Text("${isExpense ? "Add Expense": "Add Income"}", style: TextStyles.h1Dark,),
                   ),
                   SizedBox(
                     width: 250,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                       child: TextFormField(
+                        controller: amountController,
                         textAlign: TextAlign.center,
-                        initialValue: '0',
                         maxLines: 1,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(fontSize: 40),
@@ -62,25 +113,31 @@ class _CreateExpenseState extends State<CreateExpense> {
                         Image.asset("assets/images/category.png",height: 20,width: 20,),
                         SizedBox(width: 20,),
                         Expanded(
-                          child: DropdownButtonFormField<String>(
-                            iconSize: 0,
-                            value: dropdownValue,
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              labelText:"Category",
-                            ),
-                            onChanged: (String? value) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                dropdownValue = value!;
-                              });
-                            },
-                            items: list.map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
+                          child: StreamBuilder<List<TransactionCategories>>(
+                              stream: _bloc.categories,
+                              builder: (context, snapshot) {
+                                List<TransactionCategories> categories = snapshot.data?? [];
+                                print("categories are $categories");
+                                return DropdownButtonFormField<TransactionCategories>(
+                                  iconSize: 0,
+                                  decoration: const InputDecoration(
+                                    border: UnderlineInputBorder(),
+                                    labelText:"Category",
+                                  ),
+                                  onChanged: (newVal) {
+                                    // This is called when the user selects an item.
+                                    setState(() {
+                                      selectedCategory = newVal!;
+                                    });
+                                  },
+                                  items: categories.map<DropdownMenuItem<TransactionCategories>>((TransactionCategories value) {
+                                    return DropdownMenuItem<TransactionCategories>(
+                                      value: value,
+                                      child: Text(value.category),
+                                    );
+                                  }).toList(),
+                                );
+                              }
                           ),
                         ),
                       ],
@@ -94,6 +151,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                         SizedBox(width: 20,),
                         Expanded(
                           child: TextFormField(
+                            controller: descriptionController,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
                               labelText: 'note',
@@ -111,7 +169,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                         SizedBox(width: 20,),
                         Expanded(
                           child: TextFormField(
-                              controller: dateInput,
+                            controller: dateController,
                             onTap: () async {
                               DateTime? pickedDate = await showDatePicker(
                                   context: context,
@@ -119,11 +177,10 @@ class _CreateExpenseState extends State<CreateExpense> {
                                   firstDate: DateTime(1950),
                                   //DateTime.now() - not to allow to choose before today.
                                   lastDate: DateTime(2100));
-
                               if (pickedDate != null) {
                                 String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
                                 setState(() {
-                                  dateInput.text =
+                                  dateController.text =
                                       formattedDate; //set output date to TextField value.
                                 });
                               } else {}
@@ -152,7 +209,20 @@ class _CreateExpenseState extends State<CreateExpense> {
                           foregroundColor: MaterialStateProperty.all<Color>(
                               AppColors.white),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    print('the selected category iss ${selectedCategory}');
+                    ExpenseTransaction mData = ExpenseTransaction(
+                        description: descriptionController.text,
+                        categoryId: selectedCategory.id,
+                        amount: double.parse(amountController.text),
+                        category: selectedCategory.category.toString(),
+                        date: dateController.text.toString(),
+                        type: TransactionType.expense.toString(),
+                        id: Guid.newGuid.toString(),
+                        isExpense: isExpense,
+                    );
+                    service.insertTransaction(mData);
+                  },
                   child: const Text('Save'),
                 ),
               ),
