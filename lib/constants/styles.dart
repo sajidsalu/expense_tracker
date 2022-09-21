@@ -25,6 +25,7 @@ class TextStyles {
   static const h3 = TextStyle(color: AppColors.dark, fontWeight: FontWeight.w600, fontSize: FontSizes.s20);
   static const h4 = TextStyle(color: AppColors.white, fontWeight: FontWeight.w500, fontSize: FontSizes.s18);
   static const h5 = TextStyle(color: AppColors.white, fontSize: FontSizes.s16);
+  static const h5lightGrey = TextStyle(color: AppColors.grey, fontSize: FontSizes.s12);
   static const h6 = TextStyle(color: AppColors.dark, fontSize: FontSizes.s14);
   static const description = TextStyle(color: AppColors.grey, fontSize: FontSizes.s14);
 }
