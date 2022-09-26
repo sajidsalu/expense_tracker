@@ -69,13 +69,14 @@ class _CreateExpenseState extends State<CreateExpense> {
             children: [
               Row(
                 children: [
-                  Text("${isExpense ? "Expense":"Income"}", style: TextStyles.h3,),
+                  Text("${_bloc.isExpense ? "Expense":"Income"}", style: TextStyles.h3,),
                   Switch(
-                    value: isExpense,
+                    value: _bloc.isExpense,
                     onChanged: (value) {
                       setState(() {
                         isExpense = value;
                       });
+                      _bloc.setIsExpense(value);
                     },
                     activeTrackColor: AppColors.coolGrey,
                     activeColor: AppColors.primaryViolet,
@@ -87,7 +88,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                 children: [
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 10,vertical: 20),
-                    child:Text("${isExpense ? "Add Expense": "Add Income"}", style: TextStyles.h1Dark,),
+                    child:Text("${_bloc.isExpense ? "Add Expense": "Add Income"}", style: TextStyles.h1Dark,),
                   ),
                   SizedBox(
                     width: 250,
@@ -217,6 +218,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                   ),
                   onPressed: () {
                     print('the selected category iss ${selectedCategory}');
+                    print("is expense ${_bloc.isExpense}");
                     ExpenseTransaction mData = ExpenseTransaction(
                         description: descriptionController.text,
                         categoryId: selectedCategory.id,
@@ -225,11 +227,12 @@ class _CreateExpenseState extends State<CreateExpense> {
                         date: dateController.text.toString(),
                         type: TransactionType.expense.toString(),
                         id: Guid.newGuid.toString(),
-                        isExpense: isExpense,
+                        isExpense: _bloc.isExpense,
                     );
                     service.insertTransaction(mData);
+                    Navigator.pop(context);
                   },
-                  child: const Text('Save'),
+                  child: Text('Save${_bloc.isExpense?' Expense': 'Income'}'),
                 ),
               ),
             ],

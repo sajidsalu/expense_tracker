@@ -20,9 +20,9 @@ class TransactionSummaryService{
     Box<TransactionSummary> dataBox = Hive.box<TransactionSummary>(HiveBoxes.transactionSummary);
     var currentExpense = dataBox.get(HiveBoxes.transactionSummary);
     if(isExpense){
-      currentExpense?.income = ParsingUtils.doubleFrom(currentExpense.income) + amount;
-    }else{
       currentExpense?.expense = ParsingUtils.doubleFrom(currentExpense.expense) + amount;
+    }else{
+      currentExpense?.income = ParsingUtils.doubleFrom(currentExpense.income) + amount;
     }
     dataBox.put(HiveBoxes.transactionSummary, currentExpense!);
 

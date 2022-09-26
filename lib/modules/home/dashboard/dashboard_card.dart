@@ -3,6 +3,7 @@ import 'package:expense_tracker/constants/hive_boxes.dart';
 import 'package:expense_tracker/constants/styles.dart';
 import 'package:expense_tracker/models/transaction_summary.dart';
 import 'package:expense_tracker/modules/home/bloc.dart';
+import 'package:expense_tracker/modules/home/dashboard/bloc.dart';
 import 'package:expense_tracker/services/Utils/parse_utils.dart';
 import 'package:expense_tracker/services/transaction_summary_service.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +18,9 @@ class DashboardCard extends StatefulWidget {
 
 class _DashboardCardState extends State<DashboardCard> {
 
-  HomeBloc _bloc = HomeBloc();
-
+  DashboardBloc _bloc= DashboardBloc();
   late Box<TransactionSummary> dataBox;
+
 
   @override
   void initState() {

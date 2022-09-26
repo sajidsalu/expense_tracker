@@ -10,17 +10,23 @@ class CreateExpenseBloc {
   }
   TransactionCategoryService categoryService = TransactionCategoryService();
 
-  final _reqInProgress = BehaviorSubject<bool>.seeded(false);
+  final _isExpense = BehaviorSubject<bool>.seeded(true);
   final _categoriesList = BehaviorSubject<List<TransactionCategories>>.seeded([]);
 
   get transactionCategoryList => _categoriesList.value;
 
-  Stream<bool> get reqInProgress => _reqInProgress.stream;
+  Stream<bool> get isExpenseStream => _isExpense.stream;
   Stream<List<TransactionCategories>> get categories => _categoriesList.stream;
+
+  get isExpense => _isExpense.value;
 
   void loadCategories()async{
    final categories =  await categoryService.getAllTransactionCategories();
    _categoriesList.sink.add(categories);
+  }
+
+  void setIsExpense(bool isExpense){
+    _isExpense.sink.add(isExpense);
   }
 
 
