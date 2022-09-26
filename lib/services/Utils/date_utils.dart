@@ -12,4 +12,13 @@ class DatesUtils {
       return '';
     }
   }
+
+  static String formatDateForView({int? millis, DateTime? dateTime, String dateFormat = "yy MMM dd hh:mm:ss aaa"}) {
+    try {
+      dateTime ??= DateTime.fromMillisecondsSinceEpoch(millis ?? DateTime.now().millisecondsSinceEpoch);
+      return DateFormat(dateFormat).format(dateTime);
+    } catch (error) {
+      return '';
+    }
+  }
 }

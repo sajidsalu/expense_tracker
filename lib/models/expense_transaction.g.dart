@@ -18,12 +18,12 @@ class ExpenseTransactionAdapter extends TypeAdapter<ExpenseTransaction> {
     };
     return ExpenseTransaction(
       category: fields[0] as String,
+      categoryId: fields[6] as int,
       description: fields[1] as String,
       date: fields[2] as String,
       amount: fields[3] as double,
       type: fields[4] as String,
       id: fields[5] as String,
-      categoryId: fields[6] as int,
       isExpense: fields[7] as bool,
     );
   }
@@ -31,7 +31,7 @@ class ExpenseTransactionAdapter extends TypeAdapter<ExpenseTransaction> {
   @override
   void write(BinaryWriter writer, ExpenseTransaction obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.category)
       ..writeByte(1)
@@ -43,7 +43,11 @@ class ExpenseTransactionAdapter extends TypeAdapter<ExpenseTransaction> {
       ..writeByte(4)
       ..write(obj.type)
       ..writeByte(5)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(6)
+      ..write(obj.categoryId)
+      ..writeByte(7)
+      ..write(obj.isExpense);
   }
 
   @override

@@ -29,8 +29,9 @@ class _CreateExpenseState extends State<CreateExpense> {
   ExpenseTransactionService service = ExpenseTransactionService();
 
   final amountController = TextEditingController(text: "0");
-  final dateController = TextEditingController();
+  final dateController = TextEditingController(text: "today");
   final descriptionController = TextEditingController();
+  var selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   CreateExpenseBloc _bloc = CreateExpenseBloc();
 
@@ -179,9 +180,14 @@ class _CreateExpenseState extends State<CreateExpense> {
                                   lastDate: DateTime(2100));
                               if (pickedDate != null) {
                                 String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+                                String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
                                 setState(() {
-                                  dateController.text =
-                                      formattedDate; //set output date to TextField value.
+                                  if(formattedDate == today){
+                                    dateController.text="today";
+                                    selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                                  }else {
+                                    dateController.text = formattedDate;
+                                  }
                                 });
                               } else {}
                             },
