@@ -51,6 +51,7 @@ class _DashboardCardState extends State<DashboardCard> {
               valueListenable: dataBox.listenable(),
               builder: (context, Box<TransactionSummary> items, _){
                 final data = items.get(HiveBoxes.transactionSummary);
+                print("dashboard data $data");
                 var summary = data;
                 var newBalance = ParsingUtils.doubleFrom(summary?.income) - ParsingUtils.doubleFrom(summary?.expense);
                 var totalExpense = ParsingUtils.doubleFrom(summary?.expense);
