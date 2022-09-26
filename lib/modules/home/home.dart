@@ -4,8 +4,11 @@ import 'package:expense_tracker/constants/styles.dart';
 import 'package:expense_tracker/models/expense_transaction.dart';
 import 'package:expense_tracker/models/transaction_categories.dart';
 import 'package:expense_tracker/modules/expense/create/create_expense.dart';
-import 'package:expense_tracker/modules/home/dashboard_card.dart';
+import 'package:expense_tracker/modules/expense/list/expense_list.dart';
+import 'package:expense_tracker/modules/home/dashboard/dashboard_card.dart';
 import 'package:expense_tracker/modules/home/transaction-card.dart';
+import 'package:expense_tracker/modules/login/login.dart';
+import 'package:expense_tracker/services/Utils/authentication.dart';
 import 'package:expense_tracker/services/transaction_category.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
@@ -32,16 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton:  FloatingActionButton(
         child: Container(
           width: 160,
           height: 160,
-          child: Icon(
+          child: const Icon(
             Icons.add,
             size: 40,
           ),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(colors: [
                 AppColors.primaryBlue,
@@ -56,6 +59,21 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
+      ),
+      bottomNavigationBar: BottomAppBar( //bottom navigation bar on scaffold
+        color:Colors.redAccent,
+        shape: CircularNotchedRectangle(), //shape of notch
+        notchMargin: 5, //notche margin between floating button and bottom appbar
+        child: Row( //children inside bottom appbar
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            IconButton(icon: Icon(Icons.list_outlined, color: Colors.white,), onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ExpenseListingScreen()));
+            },),
+            IconButton(icon: Icon(Icons.bar_chart, color: Colors.white,), onPressed: () {},),
+          ],
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -78,6 +96,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text("John Doe", style: TextStyles.h1Dark,),
                           ],
                         ),
+                        OutlinedButton(onPressed:() async{
+                            Authentication.signOut(context: context);
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
+                        }, child: Text("Logout"))
                       ],
                     )
                   ],
@@ -90,18 +112,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        children: [
+                        children: const [
                           Expanded(
                             child: DashboardCard(),
                           ),
                         ],
                       ),
-                      SizedBox(height: 30,),
+                      const SizedBox(height: 30,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text("Transactions", style: TextStyles.h1Dark,),
-                          Text("View All", style: TextStyles.h6,),
+                          OutlinedButton(onPressed: (){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context)=> ExpenseListingScreen()),
+                            );
+                          }, child: Text("View All", style: TextStyles.h6,)),
                         ],
                       ),
                     ],
@@ -111,10 +137,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   valueListenable: dataBox.listenable(),
                   builder: (context, Box<ExpenseTransaction> items, _){
                     List<String> keys= items.keys.cast<String>().toList();
-                    if(keys.length ==0) return Text("");
+                    if(keys.length ==0) {
+                      return Column(
+                        children:[ Container(
+                            alignment: Alignment.topCenter,
+                          margin: EdgeInsets.only(top: 10.0),
+                          height: 350,
+                          color: AppColors.white,
+                          child:
+                          Center(child:Image.asset("assets/images/no-data.jpg",fit: BoxFit.fill,))),
+                          Container(
+                              alignment: Alignment.bottomCenter,
+                              child: Text("No Transactions...",style: TextStyles.h5lightGrey,)),
+                    ]
+                      );
+                    }
                     return ListView.separated(
                       separatorBuilder: (_, index) => Divider(),
-                      itemCount: keys.length,
+                      itemCount: 5,
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
                       physics: NeverScrollableScrollPhysics(),
