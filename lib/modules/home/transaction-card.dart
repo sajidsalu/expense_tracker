@@ -7,6 +7,9 @@ class TransactionCategory{
   static const int recharge = 3;
   static const int otherBills = 4;
   static const int homeRent = 5;
+  static const int shopping = 6;
+  static const int salary = 7;
+  static const int miscellaneous = 8;
 }
 class TransactionCardItem extends StatefulWidget {
   int transactionType= TransactionCategory.food;
@@ -67,6 +70,21 @@ class _TransactionCardItemState extends State<TransactionCardItem> {
         transaction = "Bills";
         break;
       }
+      case TransactionCategory.shopping : {
+        image="assets/images/shopping.png";
+        transaction = "Shopping";
+        break;
+      }
+      case TransactionCategory.salary : {
+        image="assets/images/salary.png";
+        transaction = "Salary";
+        break;
+      }
+      case TransactionCategory.miscellaneous : {
+      image="assets/images/miscellaneous.png";
+      transaction = "Other";
+      break;
+    }
     }
     return Container(
       padding: EdgeInsets.all(10),
@@ -98,6 +116,8 @@ class _TransactionCardItemState extends State<TransactionCardItem> {
             ],
           ),
           Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text("${widget.isExpenseEntry?"-":"+"}\$${widget.amount}",style: TextStyle(fontWeight: FontWeight.w600),),
               SizedBox(height: 5,),

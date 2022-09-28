@@ -9,13 +9,16 @@ import 'package:expense_tracker/modules/home/dashboard/dashboard_card.dart';
 import 'package:expense_tracker/modules/home/transaction-card.dart';
 import 'package:expense_tracker/modules/login/login.dart';
 import 'package:expense_tracker/services/Utils/authentication.dart';
+import 'package:expense_tracker/services/data_manager.dart';
 import 'package:expense_tracker/services/transaction_category.dart';
+import 'package:expense_tracker/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'package:expense_tracker/widgets/app_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -26,15 +29,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Box<ExpenseTransaction> dataBox;
+  String username = "Sajid";
+
   @override
   void initState() {
     super.initState();
     dataBox = Hive.box<ExpenseTransaction>(HiveBoxes.expenses);
+    print("logged in user $username");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _buildAppBar(context),
+      drawer: AppDrawer(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton:  FloatingActionButton(
         child: Container(
@@ -83,27 +91,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 SizedBox(height: 10,),
-                Row(
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset('assets/images/user-avatar.png',height: 50,width: 50,),
-                        SizedBox(width: 10,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Welcome"),
-                            Text("John Doe", style: TextStyles.h1Dark,),
-                          ],
-                        ),
-                        OutlinedButton(onPressed:() async{
-                            Authentication.signOut(context: context);
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
-                        }, child: Text("Logout"))
-                      ],
-                    )
-                  ],
-                ),
                 const SizedBox(height: 10,),
                 Container(
                   color: AppColors.backgroundColor,
@@ -122,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Transactions", style: TextStyles.h1Dark,),
+                          Text("Recent Transactions", style: TextStyles.h1Dark,),
                           OutlinedButton(onPressed: (){
                             Navigator.of(context).push(
                               MaterialPageRoute(builder: (context)=> ExpenseListingScreen()),
@@ -153,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
                     return ListView.separated(
-                      separatorBuilder: (_, index) => Divider(),
+                      separatorBuilder: (_, index) => Divider(height: 0, color: Colors.transparent,),
                       itemCount: 5,
                       shrinkWrap: true,
                       scrollDirection: Axis.vertical,
@@ -182,6 +169,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+              margin: EdgeInsets.only(left: 0),
+              child:Text("Expense Tracker",style: TextStyle(color: Colors.white),)),
+        ],
       ),
     );
   }

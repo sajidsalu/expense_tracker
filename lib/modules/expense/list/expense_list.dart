@@ -26,6 +26,7 @@ class _ExpenseListingScreenState extends State<ExpenseListingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _buildAppBar(context),
       body:  SafeArea(
         child: SingleChildScrollView(
          child:Container(
@@ -34,7 +35,6 @@ class _ExpenseListingScreenState extends State<ExpenseListingScreen> {
              mainAxisAlignment: MainAxisAlignment.start,
              crossAxisAlignment: CrossAxisAlignment.start,
              children: [
-               Text("Transaction History",style: TextStyles.h1Dark,),
                ValueListenableBuilder(
                 valueListenable: dataBox.listenable(),
                 builder: (context, Box<ExpenseTransaction> items, _){
@@ -55,7 +55,7 @@ class _ExpenseListingScreenState extends State<ExpenseListingScreen> {
                     );
                   }
                   return ListView.separated(
-                    separatorBuilder: (_, index) => Divider(),
+                    separatorBuilder: (_, index) => Divider(height: 0,color: Colors.transparent,),
                     itemCount: keys.length,
                     shrinkWrap: true,
                     scrollDirection: Axis.vertical,
@@ -84,6 +84,20 @@ class _ExpenseListingScreenState extends State<ExpenseListingScreen> {
            ),
          ),
       ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    return AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+              margin: EdgeInsets.only(left: 0),
+              child:Text("Transaction History",style: TextStyle(color: Colors.white),)),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:expense_tracker/modules/home/home.dart';
 import 'package:expense_tracker/services/Utils/authentication.dart';
+import 'package:expense_tracker/services/data_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -27,6 +28,10 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
         });
         print("sign in pressed");
         User? user = await Authentication.signInWithGoogle(context: context);
+        //User? user = await Authentication.authenticate();
+        if(user != null){
+          DataManager.instance.setUsername(username:  user.displayName ?? '');
+        }
         print("user signed in $user");
         setState(() {
           _isSignin=false;

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:hive/hive.dart';
  import 'package:intl/intl.dart';
+
 class CreateExpense extends StatefulWidget {
   const CreateExpense({Key? key}) : super(key: key);
 
@@ -188,6 +189,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                                     selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
                                   }else {
                                     dateController.text = formattedDate;
+                                    selectedDate= formattedDate;
                                   }
                                 });
                               } else {}
@@ -217,14 +219,12 @@ class _CreateExpenseState extends State<CreateExpense> {
                               AppColors.white),
                   ),
                   onPressed: () {
-                    print('the selected category iss ${selectedCategory}');
-                    print("is expense ${_bloc.isExpense}");
                     ExpenseTransaction mData = ExpenseTransaction(
                         description: descriptionController.text,
                         categoryId: selectedCategory.id,
                         amount: double.parse(amountController.text),
                         category: selectedCategory.category.toString(),
-                        date: dateController.text.toString(),
+                        date: selectedDate.toString(),
                         type: TransactionType.expense.toString(),
                         id: Guid.newGuid.toString(),
                         isExpense: _bloc.isExpense,

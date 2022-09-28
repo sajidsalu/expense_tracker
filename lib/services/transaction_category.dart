@@ -17,6 +17,9 @@ class TransactionCategoryService{
      await dataBox.put(3,TransactionCategories.recharge());
      await dataBox.put(4,TransactionCategories.bills());
      await dataBox.put(5,TransactionCategories.homeRent());
+     await dataBox.put(6,TransactionCategories.shopping());
+     await dataBox.put(7,TransactionCategories.salary());
+     await dataBox.put(8,TransactionCategories.miscellaneous());
      dataBox.close();
   }
 

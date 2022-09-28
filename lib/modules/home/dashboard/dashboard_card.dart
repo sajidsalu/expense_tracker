@@ -19,6 +19,7 @@ class DashboardCard extends StatefulWidget {
 class _DashboardCardState extends State<DashboardCard> {
 
   DashboardBloc _bloc= DashboardBloc();
+
   late Box<TransactionSummary> dataBox;
 
 

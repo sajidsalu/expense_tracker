@@ -44,6 +44,24 @@ class TransactionCategories extends HiveObject{
     this.id= 5,
   });
 
+  TransactionCategories.salary({
+    this.imagePath="assets/images/salary.png",
+    this.category="Salary",
+    this.id= 7,
+  });
+
+  TransactionCategories.shopping({
+    this.imagePath="assets/images/shopping.png",
+    this.category="Shopping",
+    this.id= 6,
+  });
+
+  TransactionCategories.miscellaneous({
+    this.imagePath="assets/images/miscellaneous.png",
+    this.category="Others",
+    this.id= 8,
+  });
+
   TransactionCategories.fromJson(Map<String, dynamic> json) {
     category = ParsingUtils.stringFrom(json['category']);
     id = ParsingUtils.intFrom(json['categoryId']);

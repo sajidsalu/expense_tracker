@@ -4,9 +4,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:google_sign_in/google_sign_in.dart' as signIn;
 
 class Authentication{
+
+
 
   static Future<FirebaseApp> initializeFirebase({
   required BuildContext context,
@@ -59,10 +62,11 @@ class Authentication{
       try {
         final UserCredential userCredential =
         await auth.signInWithCredential(credential);
-
+        print("user credentials ${userCredential.user}");
         user = userCredential.user;
         return user;
       } on FirebaseAuthException catch (e) {
+        print("exception occured $e");
         if (e.code == 'account-exists-with-different-credential') {
           ScaffoldMessenger.of(context).showSnackBar(
             Authentication.customSnackBar(
@@ -91,4 +95,5 @@ class Authentication{
         ),
       );
     }
-}
+
+  }
